@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 
 	"github.com/xuri/excelize/v2"
 )
 
-func getBasicInfo(basicInfo *BasicInfo, basicInfoFile string) {
+func getBasicInfo(basicInfo *BasicInfo, basicInfoFile string, wg *sync.WaitGroup) {
 	xlsx, err := excelize.OpenFile(basicInfoFile)
 	if err != nil {
 		panic(err)
@@ -32,9 +33,10 @@ func getBasicInfo(basicInfo *BasicInfo, basicInfoFile string) {
 
 		basicInfo.AddItem(item)
 	}
+	wg.Done()
 }
 
-func getSalesInfo(salesInfo *SalesInfo, salesInfoFile string) {
+func getSalesInfo(salesInfo *SalesInfo, salesInfoFile string, wg *sync.WaitGroup) {
 	xlsx, err := excelize.OpenFile(salesInfoFile)
 	if err != nil {
 		panic(err)
@@ -63,9 +65,10 @@ func getSalesInfo(salesInfo *SalesInfo, salesInfoFile string) {
 
 		salesInfo.AddItem(item)
 	}
+	wg.Done()
 }
 
-func getShippingInfo(shippingInfo *ShippingInfo, shippingInfoFile string) {
+func getShippingInfo(shippingInfo *ShippingInfo, shippingInfoFile string, wg *sync.WaitGroup) {
 	xlsx, err := excelize.OpenFile(shippingInfoFile)
 	if err != nil {
 		panic(err)
@@ -93,9 +96,10 @@ func getShippingInfo(shippingInfo *ShippingInfo, shippingInfoFile string) {
 
 		shippingInfo.AddItem(item)
 	}
+	wg.Done()
 }
 
-func getMediaInfo(mediaInfo *MediaInfo, mediaInfoFile string) {
+func getMediaInfo(mediaInfo *MediaInfo, mediaInfoFile string, wg *sync.WaitGroup) {
 	xlsx, err := excelize.OpenFile(mediaInfoFile)
 	if err != nil {
 		panic(err)
@@ -139,7 +143,7 @@ func getMediaInfo(mediaInfo *MediaInfo, mediaInfoFile string) {
 
 		mediaInfo.AddItem(item)
 	}
-
+	wg.Done()
 }
 
 func MergeInfo(basicInfo BasicInfo, salesInfo SalesInfo, shippingInfo ShippingInfo, mediaInfo MediaInfo, massUploadFile string) {

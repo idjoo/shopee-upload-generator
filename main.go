@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -22,6 +23,8 @@ func main() {
 
 		massUploadFile string
 	)
+
+	var wg sync.WaitGroup
 
 	source, err := ioutil.ReadDir("source")
 	if err != nil {
@@ -45,25 +48,30 @@ func main() {
 		}
 	}
 
-	getBasicInfo(&basicInfo, basicInfoFile)
-	getSalesInfo(&salesInfo, salesInfoFile)
-	getShippingInfo(&shippingInfo, shippingInfoFile)
-	getMediaInfo(&mediaInfo, mediaInfoFile)
+	wg.Add(5)
 
-	template, err := ioutil.ReadDir("templates")
-	if err != nil {
-		log.Fatal(err)
-	}
+	go getBasicInfo(&basicInfo, basicInfoFile, &wg)
+	go getSalesInfo(&salesInfo, salesInfoFile, &wg)
+	go getShippingInfo(&shippingInfo, shippingInfoFile, &wg)
+	go getMediaInfo(&mediaInfo, mediaInfoFile, &wg)
 
-	for _, file := range template {
-		if file.Name()[0] != '.' {
-			if strings.Contains(file.Name(), "mass_upload") {
-				massUploadFile = "templates/" + file.Name()
+	go func() {
+		template, err := ioutil.ReadDir("templates")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, file := range template {
+			if file.Name()[0] != '.' {
+				if strings.Contains(file.Name(), "mass_upload") {
+					massUploadFile = "templates/" + file.Name()
+				}
 			}
 		}
-	}
+		wg.Done()
+	}()
 
-	// pretty.Println(salesInfo.Items[0])
+	wg.Wait()
 
 	MergeInfo(basicInfo, salesInfo, shippingInfo, mediaInfo, massUploadFile)
 }
