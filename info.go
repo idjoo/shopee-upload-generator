@@ -213,6 +213,17 @@ func MergeInfo(basicInfo BasicInfo, salesInfo SalesInfo, shippingInfo ShippingIn
 				xlsx.SetCellValue(sheet, fmt.Sprintf("AA%d", i+6), shipping.Tinggi) */
 			}
 		}
+
+		for j := 0; true; j++ {
+			test, err := xlsx.GetCellValue(sheet, fmt.Sprintf("A%c%d", j+68, 2))
+			if err != nil {
+				panic(err)
+			}
+			xlsx.SetCellValue(sheet, fmt.Sprintf("A%c%d", j+66, i+6), "Aktif")
+			if test == "" {
+				break
+			}
+		}
 	}
 
 	err = xlsx.Save()
