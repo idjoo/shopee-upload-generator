@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -50,9 +51,13 @@ func main() {
 
 	wg.Add(5)
 
+	fmt.Println("Fetching basic info...")
 	go getBasicInfo(&basicInfo, basicInfoFile, &wg)
+	fmt.Println("Fetching sales info...")
 	go getSalesInfo(&salesInfo, salesInfoFile, &wg)
+	fmt.Println("Fetching shipping info...")
 	go getShippingInfo(&shippingInfo, shippingInfoFile, &wg)
+	fmt.Println("Fetching media info...")
 	go getMediaInfo(&mediaInfo, mediaInfoFile, &wg)
 
 	go func() {
@@ -72,6 +77,9 @@ func main() {
 	}()
 
 	wg.Wait()
+	fmt.Println("Fetching info done!")
 
+	fmt.Println("Writing to template file...")
 	MergeInfo(basicInfo, salesInfo, shippingInfo, mediaInfo, massUploadFile)
+	fmt.Println("Finished!")
 }
