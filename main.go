@@ -32,7 +32,7 @@ func main() {
 	}
 
 	for _, file := range source {
-		if file.Name()[0] != '.' {
+		if strings.Contains(file.Name(), ".xlsx") {
 			if strings.Contains(file.Name(), "basic_info") {
 				basicInfoFile = "source/" + file.Name()
 			}
